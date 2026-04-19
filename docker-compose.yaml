@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  caldav-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: caldav-mcp-server
+
+    ports:
+      - "8123:8123"
+
+    environment:
+      CALDAV_URL: ${CALDAV_URL}
+      CALDAV_USER: ${CALDAV_USER}
+      CALDAV_PASS: ${CALDAV_PASS}
+      MCP_SSL_VERIFY: ${MCP_SSL_VERIFY:-true}
+
+    restart: unless-stopped
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
