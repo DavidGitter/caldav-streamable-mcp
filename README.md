@@ -91,6 +91,53 @@ http://localhost:8123/mcp
 
 ---
 
+🛠 MCP Tools (Short Overview)
+list_calendars
+
+Returns all available calendars.
+````
+Input: –
+Output: { name, url }[]
+````
+
+list_events
+
+Lists events for a specific calendar within a time range.
+````
+Input:
+start (ISO 8601)
+end (ISO 8601)
+calendarUrl (string)
+
+Output: { uid, summary, start, end }[]
+````
+
+list_all_events
+
+Lists events across all calendars within a time range.
+````
+Input:
+start (ISO 8601)
+end (ISO 8601)
+
+Output: { calendar, calendarUrl, uid, summary, start, end, allDay }[] (or error object)
+````
+
+create_event
+
+Creates a new calendar event.
+````
+Input:
+summary (string)
+start (ISO 8601)
+end (ISO 8601)
+calendarUrl (optional)
+
+Output: eventUrl (string)
+````
+
+---
+
 ## 🛠️ Development
 
 ### Run locally

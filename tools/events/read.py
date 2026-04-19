@@ -1,5 +1,6 @@
 from mcp.server.fastmcp import FastMCP
 from datetime import timezone
+from typing import Annotated
 
 from ..utils import get_client, parse_dt
 
@@ -7,8 +8,12 @@ from ..utils import get_client, parse_dt
 def register_event_read_tools(mcp: FastMCP):
 
     @mcp.tool()
-    async def list_events(start: str, end: str, calendarUrl: str):
-        """Lists events within timeframe for one calendar."""
+    async def list_events(
+        start: Annotated[str, "Start datetime (ISO 8601)"],
+        end: Annotated[str, "End datetime (ISO 8601)"],
+        calendarUrl: Annotated[str, "Target calendar URL"],
+    ) -> list[dict]:
+        """Lists events within a timeframe for one calendar."""
         client = get_client()
         calendar = client.calendar(url=calendarUrl)
 
@@ -32,8 +37,11 @@ def register_event_read_tools(mcp: FastMCP):
 
 
     @mcp.tool()
-    async def list_all_events(start: str, end: str):
-        """Lists events across all calendars."""
+    async def list_all_events(
+        start: Annotated[str, "Start datetime (ISO 8601)"],
+        end: Annotated[str, "End datetime (ISO 8601)"],
+    ) -> list[dict]:
+        """Lists events across all calendars within a timeframe."""
         client = get_client()
         calendars = client.principal().calendars()
 

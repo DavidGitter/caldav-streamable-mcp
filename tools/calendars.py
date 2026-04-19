@@ -1,10 +1,12 @@
 from mcp.server.fastmcp import FastMCP
+from typing import Annotated
 from .utils import get_client
+
 
 def register_calendar_tools(mcp: FastMCP):
 
     @mcp.tool()
-    async def list_calendars():
+    async def list_calendars() -> list[dict]:
         """Lists all available calendars."""
         client = get_client()
         calendars = client.principal().calendars()
