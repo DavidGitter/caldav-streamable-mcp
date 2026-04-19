@@ -26,9 +26,6 @@ CALDAV_PASS=yourpassword
 MCP_SSL_VERIFY=true
 ```
 
-The server exposes the service port 8123. The endpoint u want to query is
-``http://caldav-server-adress:8123/mcp``
-
 ---
 
 ## 🐳 Docker Compose (recommended)
