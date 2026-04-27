@@ -5,18 +5,39 @@ from typing import Annotated
 from ..utils import get_client, parse_dt
 
 
+from mcp.server.fastmcp import FastMCP
+from typing import Annotated
+
+from ..utils import get_client, parse_dt
+
+
 def register_event_read_tools(mcp: FastMCP):
 
     @mcp.tool()
     async def list_events(
         start: Annotated[str, "Start datetime (ISO 8601)"],
         end: Annotated[str, "End datetime (ISO 8601)"],
-        calendarUrl: Annotated[str, "Target calendar URL"],
+        calendarName: Annotated[str, "Target calendar name"],
     ) -> list[dict]:
         """Lists events within a timeframe for one calendar."""
         client = get_client()
-        calendar = client.calendar(url=calendarUrl)
 
+        calendars = client.principal().calendars()
+
+        # Find calendar by name
+        if calendarName:
+            calendar = next(
+                (c for c in calendars if getattr(c, "name", None) == calendarName),
+                None
+            )
+            if not calendar:
+                raise ValueError(f"Calendar '{calendarName}' not found")
+        else:
+            if not calendars:
+                raise ValueError("No calendars available")
+            calendar = calendars[0]
+
+        # Query events
         events = calendar.date_search(
             start=parse_dt(start),
             end=parse_dt(end)
