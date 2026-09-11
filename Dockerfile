@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     gcc \
     libxml2-dev \
     libxslt-dev \
+    curl \
     ca-certificates \
     && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
