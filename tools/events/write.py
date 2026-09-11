@@ -15,7 +15,7 @@ def register_event_write_tools(mcp: FastMCP):
         end: Annotated[str, "End datetime (ISO 8601)"],
         calendarName: Annotated[str, "Target calendar"],
     ):
-        """Creates a new calendar event"""#
+        """Creates a new calendar event"""
         
         getLogger().info("Executing create_event.")
         

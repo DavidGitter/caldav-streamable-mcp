@@ -7,9 +7,8 @@ It exposes tools for reading and writing calendar data via the MCP protocol.
 
 ## ✨ Features
 
-* 📅 List calendars
-* 📖 Read events (single calendar or across all)
-* ✍️ Create events
+* 📅 Read, create and delete calendars
+* 📖 Read, create, delete and search events (single calendar or across all)
 * 🌐 Streamable HTTP transport (`/mcp`)
 * 🧩 Modular structure (`tools/`)
 
@@ -91,50 +90,30 @@ http://localhost:8123/mcp
 
 ---
 
-🛠 MCP Tools (Short Overview)
-list_calendars
+## 🛠 MCP Tools
 
-Returns all available calendars.
-````
-Input: –
-Output: { name, url }[]
-````
+The server provides the following tools for managing CalDAV calendars and events:
 
-list_events
-
-Lists events for a specific calendar within a time range.
-````
-Input:
-start (ISO 8601)
-end (ISO 8601)
-calendarUrl (string)
-
-Output: { uid, summary, start, end }[]
-````
-
-list_all_events
-
-Lists events across all calendars within a time range.
-````
-Input:
-start (ISO 8601)
-end (ISO 8601)
-
-Output: { calendar, calendarUrl, uid, summary, start, end, allDay }[] (or error object)
-````
-
-create_event
-
-Creates a new calendar event.
-````
-Input:
-summary (string)
-start (ISO 8601)
-end (ISO 8601)
-calendarUrl (optional)
-
-Output: eventUrl (string)
-````
+📅 Calendars
+```text
+list_calendars — Lists all available calendars.
+create_calendar — Creates a new calendar with an optional description and color.
+delete_calendar — Deletes a calendar by name.
+```
+📆 Events
+```text
+list_events_between — Lists events within a specified timeframe for one calendar.
+list_all_events — Lists events across all calendars within a specified timeframe.
+list_day_events — Lists all events for a specific day, optionally limited to one calendar.
+search_events — Searches events by text in their summary, description, or location.
+get_next_event — Returns the next event after a specified datetime.
+create_event — Creates a new calendar event.
+delete_event — Deletes an event by UID, optionally limited to one calendar.
+```
+🩺 Health
+```text
+GET /health — Returns the current health status of the server.
+```
 
 ---
 
