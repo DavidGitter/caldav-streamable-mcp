@@ -2,14 +2,14 @@ import logging
 import sys
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from tools import register_tools
 
+from tools import utils
+
 load_dotenv()
-
-logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-logger = logging.getLogger("mcp-server")
-
 
 mcp = FastMCP(
     name="caldav-server",
@@ -17,10 +17,14 @@ mcp = FastMCP(
     port=8123
 )
 
-logger.info("Starting MCP server...")
+@mcp.custom_route("/health", methods=["GET"])
+async def health(request: Request):
+    return JSONResponse({"status": "healthy"})
 
 
-# Tools registrieren
+utils.getLogger().info("Starting MCP server...")
+
+# registering the tools in ./tools
 register_tools(mcp)
 
 
