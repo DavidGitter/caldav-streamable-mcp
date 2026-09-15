@@ -8,7 +8,7 @@ from ..utils import get_client, parse_dt
 from mcp.server.fastmcp import FastMCP
 from typing import Annotated
 
-from ..utils import get_client, parse_dt, getLogger
+from ..utils import get_client, parse_dt, getLogger, get_vobject_value
 
 
 def register_event_read_tools(mcp: FastMCP):
@@ -51,10 +51,10 @@ def register_event_read_tools(mcp: FastMCP):
             vevent = e.vobject_instance.vevent
 
             result.append({
-                "uid": str(getattr(vevent, "uid", "n/a")),
-                "summary": str(getattr(vevent, "summary", "No Title")),
-                "start": str(getattr(vevent.dtstart, "value", "")),
-                "end": str(getattr(vevent.dtend, "value", "")),
+                "uid": get_vobject_value(vevent, "uid", "n/a"),
+                "summary": get_vobject_value(vevent, "summary", "No Title"),
+                "start": get_vobject_value(vevent.dtstart, "value", ""),
+                "end": get_vobject_value(vevent.dtend, "value", ""),
             })
 
         return result
@@ -104,8 +104,8 @@ def register_event_read_tools(mcp: FastMCP):
                     result.append({
                         "calendar": str(calendar.name),
                         "calendarUrl": str(calendar.url),
-                        "uid": str(getattr(vevent, "uid", "n/a")),
-                        "summary": str(getattr(vevent, "summary", "No Title")),
+                        "uid": get_vobject_value(vevent, "uid", "n/a"),
+                        "summary": get_vobject_value(vevent, "summary", "No Title"),
                         "start": str(safe_get(vevent, "dtstart")),
                         "end": str(safe_get(vevent, "dtend")),
                         "allDay": safe_get(vevent, "dtend") is None
@@ -181,7 +181,7 @@ def register_event_read_tools(mcp: FastMCP):
 
                 result.append({
                     "calendar": calendar_name,
-                    "uid": str(getattr(vevent, "uid", "n/a")),
+                    "uid": get_vobject_value(vevent, "uid", "n/a"),
                     "summary": str(
                         getattr(vevent, "summary", "No Title")
                     ),
@@ -256,10 +256,10 @@ def register_event_read_tools(mcp: FastMCP):
             for e in events:
                 vevent = e.vobject_instance.vevent
 
-                uid = str(getattr(vevent, "uid", "n/a"))
-                summary = str(getattr(vevent, "summary", ""))
-                description = str(getattr(vevent, "description", ""))
-                location = str(getattr(vevent, "location", ""))
+                uid = get_vobject_value(vevent, "uid", "n/a")
+                summary = get_vobject_value(vevent, "summary", "")
+                description = get_vobject_value(vevent, "description", "")
+                location = get_vobject_value(vevent, "location", "")
 
                 # Search case-insensitively in all relevant fields
                 searchable_text = " ".join([
@@ -378,16 +378,10 @@ def register_event_read_tools(mcp: FastMCP):
 
         return {
             "calendar": next_calendar_name,
-            "uid": str(getattr(next_event, "uid", "n/a")),
-            "summary": str(
-                getattr(next_event, "summary", "No Title")
-            ),
-            "description": str(
-                getattr(next_event, "description", "")
-            ),
-            "location": str(
-                getattr(next_event, "location", "")
-            ),
+            "uid": get_vobject_value(next_event, "uid", "n/a"),
+            "summary": get_vobject_value(next_event, "summary", "No Title"),
+            "description": get_vobject_value(next_event, "description", ""),
+            "location": get_vobject_value(next_event, "location", ""),
             "start": str(
                 getattr(next_event.dtstart, "value", "")
             ),

@@ -36,3 +36,9 @@ def parse_dt(dt_str: str) -> datetime:
 
 def getLogger():
     return logger
+
+def get_vobject_value(obj, attr, default=""):
+    prop = getattr(obj, attr, None)
+    if prop is None:
+        return default
+    return str(getattr(prop, "value", prop))
