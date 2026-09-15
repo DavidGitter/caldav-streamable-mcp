@@ -74,14 +74,12 @@ def register_event_write_tools(mcp: FastMCP):
     ) -> dict:
         """Deletes an event by UID."""
 
-        getLogger().info(
-            "Executing delete_event for uid='%s', calendar='%s'.",
-            uid,
-            calendarName or "all",
-        )
+        logger = getLogger()
 
         if not uid or not uid.strip():
             raise ValueError("Event UID must not be empty")
+
+        uid = uid.strip()
 
         client = get_client()
         calendars = client.principal().calendars()
@@ -89,7 +87,6 @@ def register_event_write_tools(mcp: FastMCP):
         if not calendars:
             raise ValueError("No calendars available")
 
-        # Select calendars
         if calendarName:
             calendars_to_search = [
                 c for c in calendars
@@ -97,43 +94,61 @@ def register_event_write_tools(mcp: FastMCP):
             ]
 
             if not calendars_to_search:
-                raise ValueError(f"Calendar '{calendarName}' not found")
+                raise ValueError(
+                    f"Calendar '{calendarName}' not found"
+                )
         else:
             calendars_to_search = calendars
 
         matches = []
 
-        # Search event in selected calendars
         for calendar in calendars_to_search:
             calendar_name = getattr(calendar, "name", "Unknown")
 
-            getLogger().debug(
-                "Searching for event '%s' in calendar '%s'.",
+            logger.debug(
+                "Searching for UID '%s' in calendar '%s'",
                 uid,
                 calendar_name,
             )
 
-            events = calendar.events()
+            try:
+                events = calendar.search(
+                    uid=uid,
+                    event=True,
+                    expand=False,
+                )
+            except Exception:
+                logger.exception(
+                    "Failed searching calendar '%s'",
+                    calendar_name,
+                )
+                continue
 
             for event in events:
-                vevent = event.vobject_instance.vevent
+                try:
+                    vevent = event.vobject_instance.vevent
+                    event_uid = str(vevent.uid.value)
 
-                event_uid = str(
-                    getattr(vevent, "uid", "")
-                )
+                    if event_uid == uid:
+                        matches.append(
+                            (calendar, event, calendar_name, vevent)
+                        )
 
-                if event_uid == uid:
-                    matches.append(
-                        (calendar, event, calendar_name, vevent)
+                except Exception:
+                    logger.exception(
+                        "Could not read event from calendar '%s'",
+                        calendar_name,
                     )
 
         if not matches:
-            raise ValueError(f"Event with UID '{uid}' not found")
+            raise ValueError(
+                f"Event with UID '{uid}' not found"
+            )
 
-        # Prevent accidentally deleting multiple events
         if len(matches) > 1:
             calendars_found = [
-                match[2] for match in matches
+                match[2]
+                for match in matches
             ]
 
             raise ValueError(
@@ -148,8 +163,8 @@ def register_event_write_tools(mcp: FastMCP):
             getattr(vevent, "summary", "No Title")
         )
 
-        getLogger().info(
-            "Deleting event '%s' (%s) from calendar '%s'.",
+        logger.info(
+            "Deleting event '%s' (%s) from calendar '%s'",
             summary,
             uid,
             calendar_name,
